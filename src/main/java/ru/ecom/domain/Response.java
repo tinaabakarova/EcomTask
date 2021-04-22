@@ -4,17 +4,14 @@ import com.google.gson.JsonObject;
 public class Response {
     private final JsonObject response;
     private final JsonObject error;
-    private final Integer rCode;
-    private final Integer contentLength;
+    private final Integer responseCode;
     public static class Builder {
         private JsonObject response;
         private JsonObject error;
-        private final Integer rCode;
-        private final Integer contentLength;
+        private final Integer responseCode;
 
-        public Builder(Integer rCode, Integer contentLength) {
-            this.rCode = rCode;
-            this.contentLength = contentLength;
+        public Builder(Integer responseCode) {
+            this.responseCode = responseCode;
         }
 
         public Builder setResponse(JsonObject response) {
@@ -35,18 +32,13 @@ public class Response {
     }
 
     private Response(Builder builder){
-        this.rCode = builder.rCode;
-        this.contentLength = builder.contentLength;
+        this.responseCode = builder.responseCode;
         this.response = builder.response;
         this.error = builder.error;
     }
 
-    public Integer getrCode() {
-        return rCode;
-    }
-
-    public Integer getContentLength() {
-        return contentLength;
+    public Integer getResponseCode() {
+        return responseCode;
     }
 }
 

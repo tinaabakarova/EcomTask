@@ -43,10 +43,10 @@ public class DocumentHttpHandler implements HttpHandler {
                 putHandle();
                 break;
             default:
-                Response response = new Response.Builder(StatusCode.METHOD_NOT_ALLOWED.getCode(), stringBuilder.length())
+                Response response = new Response.Builder(StatusCode.METHOD_NOT_ALLOWED.getCode())
                         .setError(ResponseMessage.METHOD_NOT_ALLOWED.getMessage())
                         .build();
-                sendResponse(response);
+                sendResponse(response, stringBuilder.length());
                 break;
         }
     }
@@ -64,31 +64,31 @@ public class DocumentHttpHandler implements HttpHandler {
         document.setDocBody(DocumentParser.getJsonStringFromObject(document));
 
         if (document.getSender() == null) {
-            response = new Response.Builder(StatusCode.BAD_REQUEST.getCode(), contentLength)
+            response = new Response.Builder(StatusCode.BAD_REQUEST.getCode())
                     .setError(ResponseMessage.SENDER_NOT_FILLED.getMessage())
                     .build();
         } else if (document.getRecipient() == null) {
-            response = new Response.Builder(StatusCode.BAD_REQUEST.getCode(), contentLength)
+            response = new Response.Builder(StatusCode.BAD_REQUEST.getCode())
                     .setError(ResponseMessage.RECIPIENT_NOT_FILLED.getMessage())
                     .build();
         } else {
             try {
                 if (documentDao.insert(document)) {
-                    response = new Response.Builder(StatusCode.OK.getCode(), contentLength)
+                    response = new Response.Builder(StatusCode.OK.getCode())
                             .setResponse(documentJson)
                             .build();
                 } else {
-                    response = new Response.Builder(StatusCode.OK.getCode(), contentLength)
+                    response = new Response.Builder(StatusCode.OK.getCode())
                             .setError(ResponseMessage.ZERO_RECORDS_CHANGED.getMessage())
                             .build();
                 }
             } catch (SQLException throwables) {
-                response = new Response.Builder(StatusCode.BAD_REQUEST.getCode(), contentLength)
+                response = new Response.Builder(StatusCode.BAD_REQUEST.getCode())
                         .setError(throwables.getMessage())
                         .build();
             }
         }
-        sendResponse(response);
+        sendResponse(response, contentLength);
     }
 
     private void getHandle(){
@@ -103,9 +103,9 @@ public class DocumentHttpHandler implements HttpHandler {
         //
     }
 
-    private void sendResponse(Response response) {
+    private void sendResponse(Response response, int contentLength) {
         try {
-            httpExchange.sendResponseHeaders(response.getrCode(), response.getContentLength());
+            httpExchange.sendResponseHeaders(response.getResponseCode(), contentLength);
             OutputStream output = httpExchange.getResponseBody();
             output.write(DocumentParser.getJsonStringFromObject(response).getBytes());
             httpExchange.close();
